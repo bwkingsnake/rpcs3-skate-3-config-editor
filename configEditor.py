@@ -69,26 +69,30 @@ class Parser:
             input()
             exit()
 
-parser = Parser()
-rpcs3Path = parser.openfile()
-parser.checkRpcs3Path(rpcs3Path)
-BLUS = Path(rpcs3Path + "/config/custom_configs/config_BLUS30464.yml")
-BLES = Path(rpcs3Path + "/config/custom_configs/config_BLES00760.yml")
-configs = [BLUS, BLES]
-BASE_DIR = Path(__file__).resolve().parent
-config_default = BASE_PATH / "config_default.yml"
+def main():
+    parser = Parser()
+    rpcs3Path = parser.openfile()
+    parser.checkRpcs3Path(rpcs3Path)
+    BLUS = Path(rpcs3Path + "/config/custom_configs/config_BLUS30464.yml")
+    BLES = Path(rpcs3Path + "/config/custom_configs/config_BLES00760.yml")
+    configs = [BLUS, BLES]
+    BASE_DIR = Path(__file__).resolve().parent
+    config_default = BASE_PATH / "config_default.yml"
 
-for config in configs:  
-    path = Path(config)
-    if path.exists():
-        print(f"editing {path}")
-        parser.editConfig(config)
-    else:
-        try:
-            print(f"creating {path}")
-            shutil.copy(config_default, path)
-        except shutil.SameFileError:
-            print("Source and destination represents the same file.")
-        except PermissionError:
-            print("Permission denied.")
-input()
+    for config in configs:  
+        path = Path(config)
+        if path.exists():
+            print(f"editing {path}")
+            parser.editConfig(config)
+        else:
+            try:
+                print(f"creating {path}")
+                shutil.copy(config_default, path)
+            except shutil.SameFileError:
+                print("Source and destination represents the same file.")
+            except PermissionError:
+                print("Permission denied.")
+    input()
+
+if __name__ == '__main__':
+    main()
