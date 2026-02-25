@@ -56,7 +56,7 @@ class Parser:
                 file.write(line + "\n")
     
     def openfile(self):
-        oldFilePath = askopenfilename(filetypes=[("exe", "*.exe")])
+        oldFilePath = askopenfilename(title="Locate your rpcs3.exe in your rpcs3 instalation folder",filetypes=[("exe", "*.exe")])
         newFilePath = oldFilePath.replace("/rpcs3.exe", "")
         if oldFilePath != newFilePath:
             return newFilePath
@@ -70,6 +70,7 @@ class Parser:
             exit()
 
 def main():
+    print("Locate your rpcs3.exe in your rpcs3 instalation folder")
     parser = Parser()
     rpcs3Path = parser.openfile()
     parser.checkRpcs3Path(rpcs3Path)

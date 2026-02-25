@@ -1,0 +1,1 @@
+when the open file dialogue pops up navigate to your rpcs3 installation folder and select "rpcs3.exe"
