@@ -11,14 +11,10 @@ else:
 
 class Checker:
     def __init__(self):
-  
-
         swaplist_path = BASE_PATH / "SwapList.json"
         with open(swaplist_path, "r") as f:
             data = json.load(f)
 
-       
-        
         self.swapListIP = data["swapListIP"]
         self.settings = {
             "  Internet enabled": "  Internet enabled: Connected",
