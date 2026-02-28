@@ -26,7 +26,8 @@ class Checker:
             "  PSN status": "  PSN status: RPCN",
             "  PSN Country": "  PSN Country: us",
             "  Clans Enabled": "  Clans Enabled: false",
-            "  XFloat Accuracy": "  XFloat Accuracy: Approximate"
+            "  XFloat Accuracy": "  XFloat Accuracy: Approximate",
+            "  SPU loop detection": "  SPU loop detection: false"
         }
     
     def getValue(self, key : str) -> str:
@@ -83,16 +84,20 @@ def main():
     for config in configs:  
         path = Path(config)
         if path.exists():
-            print(f"editing {path}")
+            print("-----------------------------------------------------------------------------------------------------------------")
+            print(f"Editing {path}")
             parser.editConfig(config)
         else:
             try:
-                print(f"creating {path}")
+                print(f"Creating {path} because it does not exist")
                 shutil.copy(config_default, path)
             except shutil.SameFileError:
                 print("Source and destination represents the same file.")
             except PermissionError:
                 print("Permission denied.")
+    
+    print("-----------------------------------------------------------------------------------------------------------------")
+    print("Config files have been edited/created, you can now exit the program and proceed with the next instructions!")
     input()
 
 if __name__ == '__main__':
