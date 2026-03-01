@@ -90,6 +90,7 @@ def main():
         else:
             try:
                 print(f"Creating {path} because it does not exist")
+                path.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(config_default, path)
             except shutil.SameFileError:
                 print("Source and destination represents the same file.")
