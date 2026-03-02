@@ -28,7 +28,7 @@ class Parser:
         }
     
     def getSwapListIP(self, swapListIP_Path : str) -> str:
-        with open(self.swapListIP_Path, "r") as f:
+        with open(swapListIP_Path, "r") as f:
             data = json.load(f)
         return data["swapListIP"]
             
@@ -61,19 +61,13 @@ class Parser:
         else:
             print(f"ERROR you didnt select rpcs3.exe please select the right file")
             return None
-    
-    def checkRpcs3Path(self, path: str) -> bool:
-        if path == None:
-            return False
             
 def main():
-    print("Locate your rpcs3.exe in your rpcs3 instalation folder")
-    
+    print("Locate your rpcs3.exe in your rpcs3 instalation folder")    
     parser = Parser()
     rpcs3Path = parser.openfile()
-    validRpcs3Path = parser.checkRpcs3Path(rpcs3Path)
 
-    if validRpcs3Path == False:
+    if rpcs3Path == None:
         print("INVALID RPCS3 PATH")
         exit()
     else:
