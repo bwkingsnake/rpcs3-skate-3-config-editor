@@ -9,18 +9,15 @@ if getattr(sys, 'frozen', False):
 else:
     BASE_PATH = Path(__file__).resolve().parent
 
-class Checker:
+class Parser:
     def __init__(self):
-        swaplist_path = BASE_PATH / "SwapList.json"
-        with open(swaplist_path, "r") as f:
-            data = json.load(f)
-
-        self.swapListIP = data["swapListIP"]
+        self.swapListIP_Path = BASE_PATH / "SwapList.json"
+        self.swapListIP = self.getSwapListIP(self.swapListIP_Path)
         self.settings = {
             "  Internet enabled": "  Internet enabled: Connected",
             "  IP address": "  IP address: 0.0.0.0",
             "  Bind address": "  Bind address: 0.0.0.0",
-            "  DNS address": "  DNS address: 8.8.8.8",
+            "  DNS address": "  DNS address: 8.8.8.8",             
             "  IP swap list": self.swapListIP,
             "  UPNP Enabled": "  UPNP Enabled: true",
             "  PSN status": "  PSN status: RPCN",
@@ -30,28 +27,28 @@ class Checker:
             "  SPU loop detection": "  SPU loop detection: false"
         }
     
+    def getSwapListIP(self, swapListIP_Path : str) -> str:
+        with open(self.swapListIP_Path, "r") as f:
+            data = json.load(f)
+        return data["swapListIP"]
+            
     def getValue(self, key : str) -> str:
         if key in self.settings:
             return(self.settings[key])
         else:
             return None
 
-class Parser:
     def editConfig(self, config: str):
-        checker = Checker()
         lines = []
-
         with open(config, 'r') as file:   
             for line in file:
                 lines.append(line.rstrip())
-
         for i, line in enumerate(lines):
             key = line.split(":",maxsplit=1)[0]
-            value = checker.getValue(key)
+            value = self.getValue(key)
             if value != None:
                 lines[i] = value
                 print(value)
-    
         with open(config,'w') as file:
             for line in lines:
                 file.write(line + "\n")
@@ -65,41 +62,45 @@ class Parser:
             print(f"ERROR you didnt select rpcs3.exe please select the right file")
             return None
     
-    def checkRpcs3Path(self, path: str):
+    def checkRpcs3Path(self, path: str) -> bool:
         if path == None:
-            input()
-            exit()
-
+            return False
+            
 def main():
     print("Locate your rpcs3.exe in your rpcs3 instalation folder")
+    
     parser = Parser()
     rpcs3Path = parser.openfile()
-    parser.checkRpcs3Path(rpcs3Path)
-    BLUS = Path(rpcs3Path + "/config/custom_configs/config_BLUS30464.yml")
-    BLES = Path(rpcs3Path + "/config/custom_configs/config_BLES00760.yml")
-    configs = [BLUS, BLES]
-    BASE_DIR = Path(__file__).resolve().parent
-    config_default = BASE_PATH / "config_default.yml"
+    validRpcs3Path = parser.checkRpcs3Path(rpcs3Path)
 
-    for config in configs:  
-        path = Path(config)
-        if path.exists():
-            print("-----------------------------------------------------------------------------------------------------------------")
-            print(f"Editing {path}")
-            parser.editConfig(config)
-        else:
-            try:
-                print(f"Creating {path} because it does not exist")
-                path.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy(config_default, path)
-            except shutil.SameFileError:
-                print("Source and destination represents the same file.")
-            except PermissionError:
-                print("Permission denied.")
-    
-    print("-----------------------------------------------------------------------------------------------------------------")
-    print("Config files have been edited/created, you can now exit the program and proceed with the next instructions!")
-    input()
+    if validRpcs3Path == False:
+        print("INVALID RPCS3 PATH")
+        exit()
+    else:
+
+        defaultConfig = BASE_PATH / "config_default.yml"
+        BLUS = Path(rpcs3Path + "/config/custom_configs/config_BLUS30464.yml")
+        BLES = Path(rpcs3Path + "/config/custom_configs/config_BLES00760.yml")
+        configs = [BLUS, BLES]
+
+        for config in configs:  
+            path = Path(config)
+            if path.exists():
+                print("-----------------------------------------------------------------------------------------------------------------")
+                print(f"Editing {path}")
+                parser.editConfig(config)
+            else:
+                try:
+                    print(f"Creating {path} because it does not exist")
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy(defaultConfig, path)
+                except shutil.SameFileError:
+                    print("Source and destination represents the same file.")
+                except PermissionError:
+                    print("Permission denied.")
+        print("-----------------------------------------------------------------------------------------------------------------")
+        print("Config files have been edited/created, you can now exit the program and proceed with the next instructions!")
+        input()
 
 if __name__ == '__main__':
     main()
