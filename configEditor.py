@@ -9,9 +9,24 @@ if getattr(sys, 'frozen', False):
 else:
     BASE_PATH = Path(__file__).resolve().parent
 
-class Parser:
-    def __init__(self):
-        self.swapListIP_Path = BASE_PATH / "SwapList.json"
+class EbootManager:
+    def __init__(self, rpcs3Path : str):
+        self.rpcs3Path = rpcs3Path
+        self.defaultEboot = BASE_PATH / "Dependencies" / "EBOOT.BIN"
+        self.blusEbootPath = Path(rpcs3Path + "/dev_hdd0/game/BLUS30464/USRDIR//EBOOT.BIN")
+        self.blesEbootPath = Path(rpcs3Path + "/dev_hdd0/game/BLES00760/USRDIR/EBOOT.BIN")
+        self.ebootPaths = [self.blusEbootPath, self.blesEbootPath]
+    
+    def replaceEboots(self):
+        for ebootPath in self.ebootPaths:
+            if ebootPath.exists():
+                print(f"Replaced {ebootPath}")
+                shutil.copy(self.defaultEboot, ebootPath)
+        
+class ConfigEditor:
+    def __init__(self, rpcs3Path):
+        self.rpcs3Path = rpcs3Path
+        self.swapListIP_Path = BASE_PATH / "Dependencies" / "SwapList.json"
         self.swapListIP = self.getSwapListIP(self.swapListIP_Path)
         self.settings = {
             "  Internet enabled": "  Internet enabled: Connected",
@@ -38,7 +53,7 @@ class Parser:
         else:
             return None
 
-    def editConfig(self, config: str):
+    def changeConfigSettings(self, config: str):
         lines = []
         with open(config, 'r') as file:   
             for line in file:
@@ -52,49 +67,54 @@ class Parser:
         with open(config,'w') as file:
             for line in lines:
                 file.write(line + "\n")
-    
-    def openfile(self):
-        oldFilePath = askopenfilename(title="Locate your rpcs3.exe in your rpcs3 instalation folder",filetypes=[("exe", "*.exe")])
-        newFilePath = oldFilePath.replace("/rpcs3.exe", "")
-        if oldFilePath != newFilePath:
-            return newFilePath
+        
+    def editConfigs(self):
+        if self.rpcs3Path == None:
+            print("Invalid path or no path was selected")
+            exit()
         else:
-            print(f"ERROR you didnt select rpcs3.exe please select the right file")
-            return None
-            
-def main():
-    print("Locate your rpcs3.exe in your rpcs3 instalation folder")    
-    parser = Parser()
-    rpcs3Path = parser.openfile()
+            defaultConfig = BASE_PATH / "Dependencies" / "config_default.yml"
+            BLUS = Path(self.rpcs3Path + "/config/custom_configs/config_BLUS30464.yml")
+            BLES = Path(self.rpcs3Path + "/config/custom_configs/config_BLES00760.yml")
+            configs = [BLUS, BLES]
 
-    if rpcs3Path == None:
-        print("INVALID RPCS3 PATH")
-        exit()
+            for config in configs:  
+                path = Path(config)
+                if path.exists():
+                    print("-----------------------------------------------------------------------------------------------------------------")
+                    print(f"Editing {path}")
+                    self.changeConfigSettings(config)
+                else:
+                    try:
+                        print(f"Creating {path} because it does not exist")
+                        path.parent.mkdir(parents=True, exist_ok=True)
+                        shutil.copy(defaultConfig, path)
+                    except shutil.SameFileError:
+                        print("Source and destination represents the same file.")
+                    except PermissionError:
+                        print("Permission denied.")
+
+def getRPCS3Path():
+    oldFilePath = askopenfilename(title="Locate your rpcs3.exe in your rpcs3 instalation folder",filetypes=[("exe", "*.exe")])
+    newFilePath = oldFilePath.replace("/rpcs3.exe", "")
+    if oldFilePath != newFilePath:
+        return newFilePath
     else:
+        print(f"ERROR you didnt select rpcs3.exe please select the right file")
+        return None
 
-        defaultConfig = BASE_PATH / "config_default.yml"
-        BLUS = Path(rpcs3Path + "/config/custom_configs/config_BLUS30464.yml")
-        BLES = Path(rpcs3Path + "/config/custom_configs/config_BLES00760.yml")
-        configs = [BLUS, BLES]
 
-        for config in configs:  
-            path = Path(config)
-            if path.exists():
-                print("-----------------------------------------------------------------------------------------------------------------")
-                print(f"Editing {path}")
-                parser.editConfig(config)
-            else:
-                try:
-                    print(f"Creating {path} because it does not exist")
-                    path.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy(defaultConfig, path)
-                except shutil.SameFileError:
-                    print("Source and destination represents the same file.")
-                except PermissionError:
-                    print("Permission denied.")
-        print("-----------------------------------------------------------------------------------------------------------------")
-        print("Config files have been edited/created, you can now exit the program and proceed with the next instructions!")
-        input()
+def main():
+    print("Please Locate your rpcs3.exe in your rpcs3 instalation folder")
+    rpcs3Path = getRPCS3Path()
+    configEditor = ConfigEditor(rpcs3Path)
+    configEditor.editConfigs()
+    print("-----------------------------------------------------------------------------------------------------------------")
+    ebootManager = EbootManager(rpcs3Path)
+    ebootManager.replaceEboots()
+    print("-----------------------------------------------------------------------------------------------------------------")
+    print("Config files have been edited/created, you can now exit the program and proceed with the next instructions!")
+    input()
 
 if __name__ == '__main__':
     main()
