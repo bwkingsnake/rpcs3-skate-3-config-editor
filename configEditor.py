@@ -15,14 +15,36 @@ class EbootManager:
         self.defaultEboot = BASE_PATH / "Dependencies" / "EBOOT.BIN"
         self.blusEbootPath = Path(rpcs3Path + "/dev_hdd0/game/BLUS30464/USRDIR//EBOOT.BIN")
         self.blesEbootPath = Path(rpcs3Path + "/dev_hdd0/game/BLES00760/USRDIR/EBOOT.BIN")
-        self.ebootPaths = [self.blusEbootPath, self.blesEbootPath]
-    
+        self.diskBlusEbootPath = self.getDiskEbootPath("BLUS30464")
+        self.diskBlesEbootPath = self.getDiskEbootPath("BLES00760")
+        self.ebootPaths = [self.blusEbootPath, self.blesEbootPath,]
+
+        if self.diskBlesEbootPath != None:
+            self.ebootPaths.append(self.diskBlesEbootPath)
+
+        if self.diskBlusEbootPath != None:
+            self.ebootPaths.append(self.diskBlusEbootPath)
+ 
     def replaceEboots(self):
         for ebootPath in self.ebootPaths:
             if ebootPath.exists():
                 print(f"Replaced {ebootPath}")
                 shutil.copy(self.defaultEboot, ebootPath)
-        
+
+    def getDiskEbootPath(self, version) -> str:
+        gameConfigPath = Path(self.rpcs3Path + "/config/games.yml")
+        if gameConfigPath.exists():
+            with open(gameConfigPath, "r") as f:
+                for line in f:
+                    buffer = line.split(":", 1)
+                    if buffer[0] == version:
+                        diskPath = Path(buffer[1].strip())
+                        ebootPath = diskPath / "PS3_GAME" / "USRDIR" / "EBOOT.BIN"
+                        return ebootPath
+        else:
+            print("Cannot find games config path")
+
+      
 class ConfigEditor:
     def __init__(self, rpcs3Path):
         self.rpcs3Path = rpcs3Path
@@ -102,7 +124,6 @@ def getRPCS3Path():
     else:
         print(f"ERROR you didnt select rpcs3.exe please select the right file")
         return None
-
 
 def main():
     print("Please Locate your rpcs3.exe in your rpcs3 instalation folder")
