@@ -24,7 +24,7 @@ class EbootManager:
 
         if self.diskBlusEbootPath != None:
             self.ebootPaths.append(self.diskBlusEbootPath)
- 
+
     def replaceEboots(self):
         for ebootPath in self.ebootPaths:
             if ebootPath.exists():
@@ -44,7 +44,7 @@ class EbootManager:
         else:
             print("Cannot find games config path")
 
-      
+
 class ConfigEditor:
     def __init__(self, rpcs3Path):
         self.rpcs3Path = rpcs3Path
@@ -54,7 +54,7 @@ class ConfigEditor:
             "  Internet enabled": "  Internet enabled: Connected",
             "  IP address": "  IP address: 0.0.0.0",
             "  Bind address": "  Bind address: 0.0.0.0",
-            "  DNS address": "  DNS address: 8.8.8.8",             
+            "  DNS address": "  DNS address: 8.8.8.8",
             "  IP swap list": self.swapListIP,
             "  UPNP Enabled": "  UPNP Enabled: true",
             "  PSN status": "  PSN status: RPCN",
@@ -63,12 +63,12 @@ class ConfigEditor:
             "  XFloat Accuracy": "  XFloat Accuracy: Approximate",
             "  SPU loop detection": "  SPU loop detection: false"
         }
-    
+
     def getSwapListIP(self, swapListIP_Path : str) -> str:
         with open(swapListIP_Path, "r") as f:
             data = json.load(f)
         return data["swapListIP"]
-            
+
     def getValue(self, key : str) -> str:
         if key in self.settings:
             return(self.settings[key])
@@ -77,7 +77,7 @@ class ConfigEditor:
 
     def changeConfigSettings(self, config: str):
         lines = []
-        with open(config, 'r') as file:   
+        with open(config, 'r') as file:
             for line in file:
                 lines.append(line.rstrip())
         for i, line in enumerate(lines):
@@ -89,7 +89,7 @@ class ConfigEditor:
         with open(config,'w') as file:
             for line in lines:
                 file.write(line + "\n")
-        
+
     def editConfigs(self):
         if self.rpcs3Path == None:
             print("Invalid path or no path was selected")
@@ -100,7 +100,7 @@ class ConfigEditor:
             BLES = Path(self.rpcs3Path + "/config/custom_configs/config_BLES00760.yml")
             configs = [BLUS, BLES]
 
-            for config in configs:  
+            for config in configs:
                 path = Path(config)
                 if path.exists():
                     print("-----------------------------------------------------------------------------------------------------------------")
