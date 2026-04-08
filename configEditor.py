@@ -3,6 +3,8 @@ from pathlib import Path
 from tkinter.filedialog import askopenfilename
 import json
 import shutil
+import platform
+import os
 
 if getattr(sys, 'frozen', False):
     BASE_PATH = Path(sys.executable).parent
@@ -117,13 +119,17 @@ class ConfigEditor:
                         print("Permission denied.")
 
 def getRPCS3ConfigPath():
-    oldFilePath = askopenfilename(title="Locate your rpcs3.exe in your rpcs3 installation folder",filetypes=[("exe", "*.exe")])
-    newFilePath = oldFilePath.replace("/rpcs3.exe", "")
-    if oldFilePath != newFilePath:
-        return newFilePath
+    if platform.system() == "Linux":
+        return os.getenv("HOME") + "/.config/rpcs3"
     else:
-        print(f"ERROR You didn't select rpcs3.exe. Please select the right file")
-        return None
+        print("Please locate your rpcs3.exe in your rpcs3 installation folder")
+        oldFilePath = askopenfilename(title="Locate your rpcs3.exe in your rpcs3 installation folder",filetypes=[("exe", "*.exe")])
+        newFilePath = oldFilePath.replace("/rpcs3.exe", "")
+        if oldFilePath != newFilePath:
+            return newFilePath + "/config"
+        else:
+            print(f"ERROR you didn't select rpcs3.exe. Please select the right file")
+            return None
 
 def main():
     configPath = getRPCS3ConfigPath()
