@@ -117,16 +117,16 @@ class ConfigEditor:
                         print("Permission denied.")
 
 def getRPCS3Path():
-    oldFilePath = askopenfilename(title="Locate your rpcs3.exe in your rpcs3 instalation folder",filetypes=[("exe", "*.exe")])
+    oldFilePath = askopenfilename(title="Locate your rpcs3.exe in your rpcs3 installation folder",filetypes=[("exe", "*.exe")])
     newFilePath = oldFilePath.replace("/rpcs3.exe", "")
     if oldFilePath != newFilePath:
         return newFilePath
     else:
-        print(f"ERROR you didnt select rpcs3.exe please select the right file")
+        print(f"ERROR You didn't select rpcs3.exe. Please select the right file")
         return None
 
 def main():
-    print("Please Locate your rpcs3.exe in your rpcs3 instalation folder")
+    print("Please locate your rpcs3.exe in your rpcs3 installation folder")
     rpcs3Path = getRPCS3Path()
     configEditor = ConfigEditor(rpcs3Path)
     configEditor.editConfigs()
