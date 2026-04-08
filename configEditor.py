@@ -10,11 +10,11 @@ else:
     BASE_PATH = Path(__file__).resolve().parent
 
 class EbootManager:
-    def __init__(self, rpcs3Path : str):
-        self.rpcs3Path = rpcs3Path
+    def __init__(self, configPath : str):
+        self.configPath = configPath
         self.defaultEboot = BASE_PATH / "Dependencies" / "EBOOT.BIN"
-        self.blusEbootPath = Path(rpcs3Path + "/dev_hdd0/game/BLUS30464/USRDIR//EBOOT.BIN")
-        self.blesEbootPath = Path(rpcs3Path + "/dev_hdd0/game/BLES00760/USRDIR/EBOOT.BIN")
+        self.blusEbootPath = Path(configPath + "/dev_hdd0/game/BLUS30464/USRDIR/EBOOT.BIN")
+        self.blesEbootPath = Path(configPath + "/dev_hdd0/game/BLES00760/USRDIR/EBOOT.BIN")
         self.diskBlusEbootPath = self.getDiskEbootPath("BLUS30464")
         self.diskBlesEbootPath = self.getDiskEbootPath("BLES00760")
         self.ebootPaths = [self.blusEbootPath, self.blesEbootPath,]
@@ -32,7 +32,7 @@ class EbootManager:
                 shutil.copy(self.defaultEboot, ebootPath)
 
     def getDiskEbootPath(self, version) -> str:
-        gameConfigPath = Path(self.rpcs3Path + "/config/games.yml")
+        gameConfigPath = Path(self.configPath + "/games.yml")
         if gameConfigPath.exists():
             with open(gameConfigPath, "r") as f:
                 for line in f:
@@ -46,8 +46,8 @@ class EbootManager:
 
 
 class ConfigEditor:
-    def __init__(self, rpcs3Path):
-        self.rpcs3Path = rpcs3Path
+    def __init__(self, configPath):
+        self.configPath = configPath
         self.swapListIP_Path = BASE_PATH / "Dependencies" / "SwapList.json"
         self.swapListIP = self.getSwapListIP(self.swapListIP_Path)
         self.settings = {
@@ -91,13 +91,13 @@ class ConfigEditor:
                 file.write(line + "\n")
 
     def editConfigs(self):
-        if self.rpcs3Path == None:
+        if self.configPath == None:
             print("Invalid path or no path was selected")
             exit()
         else:
             defaultConfig = BASE_PATH / "Dependencies" / "config_default.yml"
-            BLUS = Path(self.rpcs3Path + "/config/custom_configs/config_BLUS30464.yml")
-            BLES = Path(self.rpcs3Path + "/config/custom_configs/config_BLES00760.yml")
+            BLUS = Path(self.configPath + "/custom_configs/config_BLUS30464.yml")
+            BLES = Path(self.configPath + "/custom_configs/config_BLES00760.yml")
             configs = [BLUS, BLES]
 
             for config in configs:
@@ -116,7 +116,7 @@ class ConfigEditor:
                     except PermissionError:
                         print("Permission denied.")
 
-def getRPCS3Path():
+def getRPCS3ConfigPath():
     oldFilePath = askopenfilename(title="Locate your rpcs3.exe in your rpcs3 installation folder",filetypes=[("exe", "*.exe")])
     newFilePath = oldFilePath.replace("/rpcs3.exe", "")
     if oldFilePath != newFilePath:
@@ -126,12 +126,11 @@ def getRPCS3Path():
         return None
 
 def main():
-    print("Please locate your rpcs3.exe in your rpcs3 installation folder")
-    rpcs3Path = getRPCS3Path()
-    configEditor = ConfigEditor(rpcs3Path)
+    configPath = getRPCS3ConfigPath()
+    configEditor = ConfigEditor(configPath)
     configEditor.editConfigs()
     print("-----------------------------------------------------------------------------------------------------------------")
-    ebootManager = EbootManager(rpcs3Path)
+    ebootManager = EbootManager(configPath)
     ebootManager.replaceEboots()
     print("-----------------------------------------------------------------------------------------------------------------")
     print("Config files have been edited/created, you can now exit the program and proceed with the next instructions!")
