@@ -169,9 +169,11 @@ skate_3_BLUS30464 = GameInfo(
         "  PSN Country": "us",
         "  Clans Enabled": "false",
         "  XFloat Accuracy": "Approximate",
-        "  SPU loop detection": "false"
+        "  SPU loop detection": "false",
+        "  PPU Decoder": "Recompiler (LLVM)"
     }
 )
+
 #skate 3 BLES version
 skate_3_BLES00760 = GameInfo(
     gameId = "BLES00760",
@@ -187,7 +189,8 @@ skate_3_BLES00760 = GameInfo(
         "  PSN Country": "us",
         "  Clans Enabled": "false",
         "  XFloat Accuracy": "Approximate",
-        "  SPU loop detection": "false"
+        "  SPU loop detection": "false",
+        "  PPU Decoder": "Recompiler (LLVM)"
     }
 )
 
@@ -206,7 +209,8 @@ skate_2_BLUS30253 = GameInfo(
         "  PSN Country": "us",
         "  Clans Enabled": "false",
         "  XFloat Accuracy": "Approximate",
-        "  SPU loop detection": "false" 
+        "  SPU loop detection": "false",
+        "  PPU Decoder": "Recompiler (LLVM)"
     }
 )
 
@@ -225,7 +229,8 @@ skate_2_BLES00461 = GameInfo(
         "  PSN Country": "us",
         "  Clans Enabled": "false",
         "  XFloat Accuracy": "Approximate",
-        "  SPU loop detection": "false"
+        "  SPU loop detection": "false",
+        "  PPU Decoder": "Recompiler (LLVM)"
     }
 )
 
@@ -244,7 +249,8 @@ skate_1_BLUS30059 = GameInfo(
         "  PSN Country": "us",
         "  Clans Enabled": "false",
         "  XFloat Accuracy": "Approximate",
-        "  SPU loop detection": "false"
+        "  SPU loop detection": "false",
+        "  PPU Decoder": "Recompiler (LLVM)"
     }
 )
 
@@ -263,7 +269,8 @@ skate_1_BLES00124 = GameInfo(
         "  PSN Country": "us",
         "  Clans Enabled": "false",
         "  XFloat Accuracy": "Approximate",
-        "  SPU loop detection": "false"
+        "  SPU loop detection": "false",
+        "  PPU Decoder": "Recompiler (LLVM)"
     }
 )
 
