@@ -3,6 +3,7 @@ from pathlib import Path
 from tkinter.filedialog import askopenfilename
 import os
 import shutil
+import platform
 
 #globals
 if getattr(sys, 'frozen', False):
@@ -36,7 +37,7 @@ def getRpcs3Path():
         printHeader()
         print("Please locate rpcs3.exe in your rpcs3 folder, Example: Desktop\\rpcs3\\RPCS3\\rpcs3.exe")
 
-        oldFilePath = askopenfilename(title="Locate your rpcs3.exe in your rpcs3 instalation folder",filetypes=[("exe", "*.exe")])
+        oldFilePath = askopenfilename(title="Locate your rpcs3.exe in your rpcs3 installation folder",filetypes=[("exe", "*.exe")])
         newFilePath = oldFilePath.replace("/rpcs3.exe", "")
 
         if oldFilePath != newFilePath:
@@ -63,6 +64,10 @@ class EbootManager:
     def __init__(self, rpcs3Path):
         self.rpcs3Path = Path(rpcs3Path)
         self.defaultEboot = BASE_PATH / "Dependencies" / "EBOOT.BIN"
+        if platform.system() == "Windows":
+            self.rpcs3ConfigPath = Path(self.rpcs3Path / "config")
+        else:
+            self.rpcs3ConfigPath = Path (os.getenv("HOME") / ".config" / "rpcs3")
 
     def replaceEboots(self):
         for ebootPath in self.getEbootPaths():
@@ -83,10 +88,14 @@ class EbootManager:
         return ebootPaths
 
     def getInstalledEbootPath(self, gameId):
-        return self.rpcs3Path / "dev_hdd0" / "game" / gameId / "USRDIR" / "EBOOT.BIN"
+        ebootBinPath = Path("dev_hdd0" / "game" / gameId / "USRDIR" / "EBOOT.BIN")
+        if platform.system() == "Windows":
+            return self.rpcs3Path / ebootBinPath
+        else:
+            return self.rpcs3ConfigPath / ebootBinPath
 
     def getDiskEbootPath(self, gameId):
-        gamesConfigPath = self.rpcs3Path / "config" / "games.yml"
+        gamesConfigPath = self.rpcs3ConfigPath / "games.yml"
 
         if not gamesConfigPath.exists():
             print("Cannot find games.yml")
@@ -103,19 +112,22 @@ class EbootManager:
 
 class ConfigEditor:
     def __init__(self, rpcs3Path):
-        self.rpcs3Path = Path(rpcs3Path)
+        if platform.system() == "Windows":
+            self.rpcs3Path = Path(rpcs3Path)
+        else:
+            self.rpcs3Path = ""
 
     def getValue(self, key : str, gameInfo : GameInfo) -> str:
         if key in gameInfo.settings:
             return(gameInfo.settings[key])
         else:
             return None
-    
+
     def updateConfigSettings(self, configPath, gameInfo  : GameInfo):
 
         lines = []
 
-        with open(configPath, 'r') as file:   
+        with open(configPath, 'r') as file:
 
             for line in file:
                 lines.append(line.rstrip())
@@ -124,7 +136,7 @@ class ConfigEditor:
 
                 key = line.split(":",maxsplit=1)[0]
                 value = self.getValue(key, gameInfo)
-                
+
                 if value != None:
                     lines[i] = f"{key}: {value}"
                     print(value)
@@ -134,7 +146,12 @@ class ConfigEditor:
                     file.write(line + "\n")
 
     def editConfig(self, gameInfo : GameInfo):
-        configPath = Path(self.rpcs3Path / "config" / "custom_configs" / f"config_{gameInfo.gameId}.yml")
+        if platform.system() == "Windows":
+            rpcs3ConfigPath = self.rpcs3Path + "/config"
+        else:
+            rpcs3ConfigPath = os.getenv("HOME") + "/.config/rpcs3"
+
+        configPath = Path(rpcs3ConfigPath / "custom_configs" / f"config_{gameInfo.gameId}.yml")
 
         if configPath.exists() == True:
             print(f"editing {configPath}")
@@ -150,11 +167,11 @@ class ConfigEditor:
 
             except PermissionError:
                 print("Permission denied.")
-            
+
             except FileNotFoundError:
                 print("Default config was not found.")
 
-#skate 3 BLUS versoin
+#skate 3 BLUS version
 skate_3_BLUS30464 = GameInfo(
     gameId = "BLUS30464",
     defaultConfig = BASE_PATH / "Dependencies" / "config_BLUS30464.yml",
@@ -162,7 +179,7 @@ skate_3_BLUS30464 = GameInfo(
         "  Internet enabled": "Connected",
         "  IP address": "0.0.0.0",
         "  Bind address": "0.0.0.0",
-        "  DNS address": "8.8.8.8",             
+        "  DNS address": "8.8.8.8",
         "  IP swap list": "gosredirector.ea.com==172.237.109.212&&downloads.skate.online.ea.com==172.237.109.212",
         "  UPNP Enabled": "true",
         "  PSN status": "RPCN",
@@ -183,7 +200,7 @@ skate_3_BLES00760 = GameInfo(
         "  Internet enabled": "Connected",
         "  IP address": "0.0.0.0",
         "  Bind address": "0.0.0.0",
-        "  DNS address": " 8.8.8.8",             
+        "  DNS address": " 8.8.8.8",
         "  IP swap list": "gosredirector.ea.com==172.237.109.212&&downloads.skate.online.ea.com==172.237.109.212",
         "  UPNP Enabled": "true",
         "  PSN status": "RPCN",
@@ -200,11 +217,11 @@ skate_3_BLES00760 = GameInfo(
 skate_2_BLUS30253 = GameInfo(
     gameId = "BLUS30253",
     defaultConfig = BASE_PATH / "Dependencies" / "config_BLUS30253.yml",
-    settings = { 
+    settings = {
         "  Internet enabled": "Connected",
         "  IP address": "0.0.0.0",
         "  Bind address": "0.0.0.0",
-        "  DNS address": " 8.8.8.8",             
+        "  DNS address": " 8.8.8.8",
         "  IP swap list": "skate2-ps3.fesl.ea.com=172.237.109.212",
         "  UPNP Enabled": "true",
         "  PSN status": "RPCN",
@@ -221,11 +238,11 @@ skate_2_BLUS30253 = GameInfo(
 skate_2_BLES00461 = GameInfo(
     gameId = "BLES00461",
     defaultConfig = BASE_PATH / "Dependencies" / "config_BLES00461.yml",
-    settings = { 
+    settings = {
         "  Internet enabled": "Connected",
         "  IP address": "0.0.0.0",
         "  Bind address": "0.0.0.0",
-        "  DNS address": " 8.8.8.8",             
+        "  DNS address": " 8.8.8.8",
         "  IP swap list": "skate2-ps3.fesl.ea.com=172.237.109.212",
         "  UPNP Enabled": "true",
         "  PSN status": "RPCN",
@@ -242,11 +259,11 @@ skate_2_BLES00461 = GameInfo(
 skate_1_BLUS30059 = GameInfo(
     gameId = "BLUS30059",
     defaultConfig = BASE_PATH / "Dependencies" / "config_BLUS30059.yml",
-    settings = { 
+    settings = {
         "  Internet enabled": "Connected",
         "  IP address": "0.0.0.0",
         "  Bind address": "0.0.0.0",
-        "  DNS address": " 8.8.8.8",             
+        "  DNS address": " 8.8.8.8",
         "  IP swap list": "skate-ps3.fesl.ea.com=172.237.109.212&&downloads.skate.online.ea.com=172.237.109.212",
         "  UPNP Enabled": "true",
         "  PSN status": "RPCN",
@@ -263,11 +280,11 @@ skate_1_BLUS30059 = GameInfo(
 skate_1_BLES00124 = GameInfo(
     gameId = "BLES00124",
     defaultConfig = BASE_PATH / "Dependencies" / "config_BLES00124.yml",
-    settings = { 
+    settings = {
         "  Internet enabled": "Connected",
         "  IP address": "0.0.0.0",
         "  Bind address": "0.0.0.0",
-        "  DNS address": " 8.8.8.8",             
+        "  DNS address": " 8.8.8.8",
         "  IP swap list": "skate-ps3.fesl.ea.com=172.237.109.212&&downloads.skate.online.ea.com=172.237.109.212",
         "  UPNP Enabled": "true",
         "  PSN status": "RPCN",
@@ -281,7 +298,12 @@ skate_1_BLES00124 = GameInfo(
 
 def main():
 
-    rpcs3Path = Path(getRpcs3Path())
+    # This is only needed on Windows
+    if platform.system() == "Windows":
+        rpcs3Path = Path(getRpcs3Path())
+    else:
+        rpcs3Path = ""
+
     configEditor = ConfigEditor(rpcs3Path)
     ebootManager = EbootManager(rpcs3Path)
 
@@ -300,7 +322,7 @@ def main():
 
         if userInput not in validInputs:
             clear()
-            input("(ERROR) you did not enter a valid number please press (ENTER) to continue ):")
+            input("(ERROR) you did not enter a valid number, please press (ENTER) to continue ):")
             continue
 
         break
@@ -309,20 +331,20 @@ def main():
 
     if userInput == "0":
         quit(0)
-    
+
     if userInput == "1":
         configEditor.editConfig(skate_1_BLUS30059)
         configEditor.editConfig(skate_1_BLES00124)
-    
+
     if userInput == "2":
         configEditor.editConfig(skate_2_BLUS30253)
         configEditor.editConfig(skate_2_BLES00461)
-    
+
     if userInput == "3":
         configEditor.editConfig(skate_3_BLUS30464)
         configEditor.editConfig(skate_3_BLES00760)
         ebootManager.replaceEboots()
-    
+
     if userInput == "4":
         GAMES: list[GameInfo] = [skate_1_BLUS30059, skate_1_BLES00124, skate_2_BLUS30253, skate_2_BLES00461, skate_3_BLUS30464, skate_3_BLES00760]
         for gameInfo in GAMES:
@@ -330,7 +352,7 @@ def main():
             configEditor.editConfig(gameInfo)
         printLine()
         ebootManager.replaceEboots()
- 
+
     printLine()
     print("All config files have been edited or created, you can now exit the program and proceed with the next instructions!!!")
     input()
