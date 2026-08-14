@@ -36,7 +36,7 @@ def getRpcs3Path():
         printHeader()
         print("Please locate rpcs3.exe in your rpcs3 folder, Example: Desktop\\rpcs3\\RPCS3\\rpcs3.exe")
 
-        oldFilePath = askopenfilename(title="Locate your rpcs3.exe in your rpcs3 instalation folder",filetypes=[("exe", "*.exe")])
+        oldFilePath = askopenfilename(title="Locate your rpcs3.exe in your rpcs3 installation folder",filetypes=[("exe", "*.exe")])
         newFilePath = oldFilePath.replace("/rpcs3.exe", "")
 
         if oldFilePath != newFilePath:
@@ -154,7 +154,7 @@ class ConfigEditor:
             except FileNotFoundError:
                 print("Default config was not found.")
 
-#skate 3 BLUS versoin
+#skate 3 BLUS version
 skate_3_BLUS30464 = GameInfo(
     gameId = "BLUS30464",
     defaultConfig = BASE_PATH / "Dependencies" / "config_BLUS30464.yml",
@@ -300,7 +300,7 @@ def main():
 
         if userInput not in validInputs:
             clear()
-            input("(ERROR) you did not enter a valid number please press (ENTER) to continue ):")
+            input("(ERROR) you did not enter a valid number, please press (ENTER) to continue ):")
             continue
 
         break
