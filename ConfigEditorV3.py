@@ -110,12 +110,12 @@ class ConfigEditor:
             return(gameInfo.settings[key])
         else:
             return None
-    
+
     def updateConfigSettings(self, configPath, gameInfo  : GameInfo):
 
         lines = []
 
-        with open(configPath, 'r') as file:   
+        with open(configPath, 'r') as file:
 
             for line in file:
                 lines.append(line.rstrip())
@@ -124,7 +124,7 @@ class ConfigEditor:
 
                 key = line.split(":",maxsplit=1)[0]
                 value = self.getValue(key, gameInfo)
-                
+
                 if value != None:
                     lines[i] = f"{key}: {value}"
                     print(value)
@@ -150,7 +150,7 @@ class ConfigEditor:
 
             except PermissionError:
                 print("Permission denied.")
-            
+
             except FileNotFoundError:
                 print("Default config was not found.")
 
@@ -162,7 +162,7 @@ skate_3_BLUS30464 = GameInfo(
         "  Internet enabled": "Connected",
         "  IP address": "0.0.0.0",
         "  Bind address": "0.0.0.0",
-        "  DNS address": "8.8.8.8",             
+        "  DNS address": "8.8.8.8",
         "  IP swap list": "gosredirector.ea.com==172.237.109.212&&downloads.skate.online.ea.com==172.237.109.212",
         "  UPNP Enabled": "true",
         "  PSN status": "RPCN",
@@ -183,7 +183,7 @@ skate_3_BLES00760 = GameInfo(
         "  Internet enabled": "Connected",
         "  IP address": "0.0.0.0",
         "  Bind address": "0.0.0.0",
-        "  DNS address": " 8.8.8.8",             
+        "  DNS address": " 8.8.8.8",
         "  IP swap list": "gosredirector.ea.com==172.237.109.212&&downloads.skate.online.ea.com==172.237.109.212",
         "  UPNP Enabled": "true",
         "  PSN status": "RPCN",
@@ -200,11 +200,11 @@ skate_3_BLES00760 = GameInfo(
 skate_2_BLUS30253 = GameInfo(
     gameId = "BLUS30253",
     defaultConfig = BASE_PATH / "Dependencies" / "config_BLUS30253.yml",
-    settings = { 
+    settings = {
         "  Internet enabled": "Connected",
         "  IP address": "0.0.0.0",
         "  Bind address": "0.0.0.0",
-        "  DNS address": " 8.8.8.8",             
+        "  DNS address": " 8.8.8.8",
         "  IP swap list": "skate2-ps3.fesl.ea.com=172.237.109.212",
         "  UPNP Enabled": "true",
         "  PSN status": "RPCN",
@@ -221,11 +221,11 @@ skate_2_BLUS30253 = GameInfo(
 skate_2_BLES00461 = GameInfo(
     gameId = "BLES00461",
     defaultConfig = BASE_PATH / "Dependencies" / "config_BLES00461.yml",
-    settings = { 
+    settings = {
         "  Internet enabled": "Connected",
         "  IP address": "0.0.0.0",
         "  Bind address": "0.0.0.0",
-        "  DNS address": " 8.8.8.8",             
+        "  DNS address": " 8.8.8.8",
         "  IP swap list": "skate2-ps3.fesl.ea.com=172.237.109.212",
         "  UPNP Enabled": "true",
         "  PSN status": "RPCN",
@@ -242,11 +242,11 @@ skate_2_BLES00461 = GameInfo(
 skate_1_BLUS30059 = GameInfo(
     gameId = "BLUS30059",
     defaultConfig = BASE_PATH / "Dependencies" / "config_BLUS30059.yml",
-    settings = { 
+    settings = {
         "  Internet enabled": "Connected",
         "  IP address": "0.0.0.0",
         "  Bind address": "0.0.0.0",
-        "  DNS address": " 8.8.8.8",             
+        "  DNS address": " 8.8.8.8",
         "  IP swap list": "skate-ps3.fesl.ea.com=172.237.109.212&&downloads.skate.online.ea.com=172.237.109.212",
         "  UPNP Enabled": "true",
         "  PSN status": "RPCN",
@@ -263,11 +263,11 @@ skate_1_BLUS30059 = GameInfo(
 skate_1_BLES00124 = GameInfo(
     gameId = "BLES00124",
     defaultConfig = BASE_PATH / "Dependencies" / "config_BLES00124.yml",
-    settings = { 
+    settings = {
         "  Internet enabled": "Connected",
         "  IP address": "0.0.0.0",
         "  Bind address": "0.0.0.0",
-        "  DNS address": " 8.8.8.8",             
+        "  DNS address": " 8.8.8.8",
         "  IP swap list": "skate-ps3.fesl.ea.com=172.237.109.212&&downloads.skate.online.ea.com=172.237.109.212",
         "  UPNP Enabled": "true",
         "  PSN status": "RPCN",
@@ -309,20 +309,20 @@ def main():
 
     if userInput == "0":
         quit(0)
-    
+
     if userInput == "1":
         configEditor.editConfig(skate_1_BLUS30059)
         configEditor.editConfig(skate_1_BLES00124)
-    
+
     if userInput == "2":
         configEditor.editConfig(skate_2_BLUS30253)
         configEditor.editConfig(skate_2_BLES00461)
-    
+
     if userInput == "3":
         configEditor.editConfig(skate_3_BLUS30464)
         configEditor.editConfig(skate_3_BLES00760)
         ebootManager.replaceEboots()
-    
+
     if userInput == "4":
         GAMES: list[GameInfo] = [skate_1_BLUS30059, skate_1_BLES00124, skate_2_BLUS30253, skate_2_BLES00461, skate_3_BLUS30464, skate_3_BLES00760]
         for gameInfo in GAMES:
@@ -330,7 +330,7 @@ def main():
             configEditor.editConfig(gameInfo)
         printLine()
         ebootManager.replaceEboots()
- 
+
     printLine()
     print("All config files have been edited or created, you can now exit the program and proceed with the next instructions!!!")
     input()
