@@ -3,6 +3,7 @@ from pathlib import Path
 from tkinter.filedialog import askopenfilename
 import os
 import shutil
+import platform
 
 #globals
 if getattr(sys, 'frozen', False):
@@ -63,6 +64,10 @@ class EbootManager:
     def __init__(self, rpcs3Path):
         self.rpcs3Path = Path(rpcs3Path)
         self.defaultEboot = BASE_PATH / "Dependencies" / "EBOOT.BIN"
+        if platform.system() == "Windows":
+            self.rpcs3ConfigPath = Path(self.rpcs3Path / "config")
+        else:
+            self.rpcs3ConfigPath = Path (os.getenv("HOME") / ".config" / "rpcs3")
 
     def replaceEboots(self):
         for ebootPath in self.getEbootPaths():
@@ -83,10 +88,14 @@ class EbootManager:
         return ebootPaths
 
     def getInstalledEbootPath(self, gameId):
-        return self.rpcs3Path / "dev_hdd0" / "game" / gameId / "USRDIR" / "EBOOT.BIN"
+        ebootBinPath = Path("dev_hdd0" / "game" / gameId / "USRDIR" / "EBOOT.BIN")
+        if platform.system() == "Windows":
+            return self.rpcs3Path / ebootBinPath
+        else:
+            return self.rpcs3ConfigPath / ebootBinPath
 
     def getDiskEbootPath(self, gameId):
-        gamesConfigPath = self.rpcs3Path / "config" / "games.yml"
+        gamesConfigPath = self.rpcs3ConfigPath / "games.yml"
 
         if not gamesConfigPath.exists():
             print("Cannot find games.yml")
@@ -103,7 +112,10 @@ class EbootManager:
 
 class ConfigEditor:
     def __init__(self, rpcs3Path):
-        self.rpcs3Path = Path(rpcs3Path)
+        if platform.system() == "Windows":
+            self.rpcs3Path = Path(rpcs3Path)
+        else:
+            self.rpcs3Path = ""
 
     def getValue(self, key : str, gameInfo : GameInfo) -> str:
         if key in gameInfo.settings:
@@ -134,7 +146,12 @@ class ConfigEditor:
                     file.write(line + "\n")
 
     def editConfig(self, gameInfo : GameInfo):
-        configPath = Path(self.rpcs3Path / "config" / "custom_configs" / f"config_{gameInfo.gameId}.yml")
+        if platform.system() == "Windows":
+            rpcs3ConfigPath = self.rpcs3Path + "/config"
+        else:
+            rpcs3ConfigPath = os.getenv("HOME") + "/.config/rpcs3"
+
+        configPath = Path(rpcs3ConfigPath / "custom_configs" / f"config_{gameInfo.gameId}.yml")
 
         if configPath.exists() == True:
             print(f"editing {configPath}")
@@ -281,7 +298,12 @@ skate_1_BLES00124 = GameInfo(
 
 def main():
 
-    rpcs3Path = Path(getRpcs3Path())
+    # This is only needed on Windows
+    if platform.system() == "Windows":
+        rpcs3Path = Path(getRpcs3Path())
+    else:
+        rpcs3Path = ""
+
     configEditor = ConfigEditor(rpcs3Path)
     ebootManager = EbootManager(rpcs3Path)
 
